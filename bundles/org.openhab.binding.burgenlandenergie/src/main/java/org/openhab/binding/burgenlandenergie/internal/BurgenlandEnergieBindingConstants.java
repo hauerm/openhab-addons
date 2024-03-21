@@ -29,7 +29,7 @@ public class BurgenlandEnergieBindingConstants {
     // List of all Thing Type UIDs
 
     // The sales api thing (may add grid-api thing in the future)
-    public static final ThingTypeUID THING_SALES_API = new ThingTypeUID(BINDING_ID, "salesAPI");
+    public static final ThingTypeUID THING_SALES_API = new ThingTypeUID(BINDING_ID, "sales-api");
 
     // List of all Channel ids
     public static final String CHANNEL_SALES_CURRENT_TARIFF_NAME = "currentTariffName";

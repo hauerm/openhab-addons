@@ -12,19 +12,22 @@
  */
 package org.openhab.binding.burgenlandenergie.internal.config;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link SalesApiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Hauer - Initial contribution
  */
-@NonNullByDefault
 public class SalesApiConfiguration {
 
     // The meine.burgenlandenergie.at username
-    public String username = "";
+    public String username;
 
     // The meine.burgenlandenergie.at password
-    public String password = "";
+    public String password;
+
+    // The sales contract account number
+    public String contractAccountNr;
+
+    // The division of the contract account ("E", "G")
+    public String division;
 }

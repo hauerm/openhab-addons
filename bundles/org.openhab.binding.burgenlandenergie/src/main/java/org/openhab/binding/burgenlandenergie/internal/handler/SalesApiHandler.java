@@ -14,8 +14,10 @@ package org.openhab.binding.burgenlandenergie.internal.handler;
 
 import static org.openhab.binding.burgenlandenergie.internal.BurgenlandEnergieBindingConstants.*;
 
+import java.util.concurrent.ExecutionException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.burgenlandenergie.internal.api.SalesApi;
 import org.openhab.binding.burgenlandenergie.internal.config.SalesApiConfiguration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -25,6 +27,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The {@link SalesApiHandler} is responsible for handling commands, which are
@@ -37,10 +41,13 @@ public class SalesApiHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SalesApiHandler.class);
 
-    private @Nullable SalesApiConfiguration config;
+    private SalesApi salesApi;
 
     public SalesApiHandler(Thing thing) {
         super(thing);
+
+        SalesApiConfiguration config = getConfigAs(SalesApiConfiguration.class);
+        salesApi = new SalesApi(config);
     }
 
     @Override
@@ -61,8 +68,6 @@ public class SalesApiHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SalesApiConfiguration.class);
-
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
         // the background initialization below.
@@ -79,16 +84,13 @@ public class SalesApiHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
-
-
-            boolean thingReachable = true; // <background task with long running initialization here>
-
-            // when done do:
-            if (thingReachable) {
-                logger.debug("Initializing sales thi");
+            try {
+                JsonObject contractAccounts = salesApi.getContractAccounts().get();
+                logger.debug("Contract-Accounts: {}", contractAccounts);
                 updateStatus(ThingStatus.ONLINE);
-            } else {
+            } catch (InterruptedException | ExecutionException e) {
                 updateStatus(ThingStatus.OFFLINE);
+                throw new RuntimeException(e);
             }
         });
 
