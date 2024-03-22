@@ -10,20 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api;
+package org.openhab.binding.burgenlandenergie.internal.api.pojo;
 
-import java.net.http.HttpClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * POJO
- * 
+ *
  * @author Michael Hauer - Initial contribution
  */
-public class HttpClientSingleton {
-    public static HttpClient INSTANCE = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS)
-            .connectTimeout(java.time.Duration.ofSeconds(20)).build();
+@NonNullByDefault
+public class BaseResponse {
+    private final SapMessage sapMessage;
 
-    public static void destroy() {
-        INSTANCE = null;
+    public BaseResponse(SapMessage sapMessage) {
+        this.sapMessage = sapMessage;
+    }
+
+    public SapMessage getSapMessage() {
+        return sapMessage;
     }
 }

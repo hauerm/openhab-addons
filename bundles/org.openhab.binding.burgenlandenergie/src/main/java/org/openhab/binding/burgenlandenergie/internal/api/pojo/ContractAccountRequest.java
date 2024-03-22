@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api.jsonModels.request;
+package org.openhab.binding.burgenlandenergie.internal.api.pojo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public class ContractAccountBody {
+public class ContractAccountRequest {
 
     private final String active;
     private final String eMobility;
@@ -31,7 +31,7 @@ public class ContractAccountBody {
     private final String service;
     private final String warmth;
 
-    public ContractAccountBody(String active, String eMobility, String ega, String electricityFeeders,
+    public ContractAccountRequest(String active, String eMobility, String ega, String electricityFeeders,
             String naturalGas, String sd, String service, String warmth) {
         this.active = active;
         this.eMobility = eMobility;

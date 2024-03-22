@@ -32,7 +32,7 @@ public class BurgenlandEnergieBindingConstants {
     public static final ThingTypeUID THING_SALES_API = new ThingTypeUID(BINDING_ID, "sales-api");
 
     // List of all Channel ids
-    public static final String CHANNEL_SALES_CURRENT_TARIFF_NAME = "currentTariffName";
-    public static final String CHANNEL_SALES_CURRENT_TARIFF_PRICE_KWH = "currentTariffPriceKWh";
-    public static final String CHANNEL_SALES_CURRENT_TARIFF_PRICE_FIXED = "currentTariffPriceFixed";
+    public static final String CURRENT_TARIFF_NAME = "current-tariff-name";
+    public static final String CURRENT_TARIFF_PRICE_KWH = "current-tariff-price-kwh";
+    public static final String CURRENT_TARIFF_PRICE_BASE = "current-tariff-price-base";
 }

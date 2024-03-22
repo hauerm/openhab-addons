@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api.jsonModels.request;
+package org.openhab.binding.burgenlandenergie.internal.api.pojo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

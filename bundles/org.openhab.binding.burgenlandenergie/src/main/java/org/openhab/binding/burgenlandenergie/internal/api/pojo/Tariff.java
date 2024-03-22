@@ -10,20 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api;
+package org.openhab.binding.burgenlandenergie.internal.api.pojo;
 
-import java.net.http.HttpClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * POJO
- * 
+ *
  * @author Michael Hauer - Initial contribution
  */
-public class HttpClientSingleton {
-    public static HttpClient INSTANCE = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS)
-            .connectTimeout(java.time.Duration.ofSeconds(20)).build();
-
-    public static void destroy() {
-        INSTANCE = null;
-    }
+@NonNullByDefault
+public record Tariff(String installation, String division, String tariffType, String tariffName,
+        boolean electricityWarmth, String tariffSegment, double workPrice, double basePrice, String boundUntil,
+        String priceGuaranteeUntil) {
 }

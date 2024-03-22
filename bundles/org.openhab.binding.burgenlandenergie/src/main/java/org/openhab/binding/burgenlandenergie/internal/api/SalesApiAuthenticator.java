@@ -20,8 +20,8 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.burgenlandenergie.internal.api.jsonModels.request.Login;
-import org.openhab.binding.burgenlandenergie.internal.api.jsonModels.response.OAuthToken;
+import org.openhab.binding.burgenlandenergie.internal.api.pojo.Login;
+import org.openhab.binding.burgenlandenergie.internal.api.pojo.OAuthToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class SalesApiAuthenticator {
         this.login = new Login(username, password);
     }
 
-    public CompletableFuture<String> getAccessToken() {
+    public CompletableFuture<String> getIdToken() {
         if (oAuthToken == null || oAuthToken.isExpired()) {
             Gson gson = new Gson();
             HttpRequest request = HttpRequest.newBuilder()
@@ -73,9 +73,9 @@ public class SalesApiAuthenticator {
                 } else {
                     throw new RuntimeException("Failed to obtain tokens");
                 }
-            }).thenApply(OAuthToken::getAccessToken);
+            }).thenApply(OAuthToken::getIdToken);
         } else {
-            return CompletableFuture.completedFuture(oAuthToken.getAccessToken());
+            return CompletableFuture.completedFuture(oAuthToken.getIdToken());
         }
     }
 
@@ -114,6 +114,6 @@ public class SalesApiAuthenticator {
             public void run() {
                 refreshAccessToken();
             }
-        }, TimeUnit.MINUTES.toMillis(30));
+        }, TimeUnit.MINUTES.toMillis(30), TimeUnit.MINUTES.toMillis(30));
     }
 }

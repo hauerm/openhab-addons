@@ -14,6 +14,10 @@
 			<label>Password</label>
 			<description>meine.burgenlandenergie.at password</description>
 		</parameter>
+		<parameter name="customerNr" type="text" required="true">
+			<label>Customer-Nr</label>
+			<description>The customer-nr you want to use</description>
+		</parameter>
 		<parameter name="contractAccountNr" type="text" required="true">
 			<label>Contract-Account-Number</label>
 			<description>The desired contract account number for</description>

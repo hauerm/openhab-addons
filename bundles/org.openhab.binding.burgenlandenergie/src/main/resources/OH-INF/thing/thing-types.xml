@@ -16,16 +16,31 @@
 		<description>Access Burgenland Energie Sales API</description>
 
 		<channels>
-			<channel id="channel-sales-current-tarrif-price-kwh" typeId="sales-api"/>
+			<channel id="current-tariff-price-kwh" typeId="current-tariff-price-kwh"/>
+			<channel id="current-tariff-price-base" typeId="current-tariff-price-base"/>
+			<channel id="current-tariff-name" typeId="current-tariff-name"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:sales-api:config"/>
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="channel-sales-current-tarrif-price-kwh">
-		<item-type>Number:Currency</item-type>
+	<channel-type id="current-tariff-price-kwh">
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Euro/kWh</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
 		<description>Working price in Euro per kWh</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-tariff-price-base">
+		<item-type>Number:Currency</item-type>
+		<label>Euro/Month</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Base price in Euro per month</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-tariff-name">
+		<item-type>String</item-type>
+		<label>Tariff Name</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Tariff Name</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
