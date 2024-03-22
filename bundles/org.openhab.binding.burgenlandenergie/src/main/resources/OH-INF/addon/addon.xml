@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>BurgenlandEnergie Binding</name>
-	<description>This is the binding for BurgenlandEnergie.</description>
+	<description>This binding provides information about services provided by Burgenland Energie.</description>
 
 </addon:addon>

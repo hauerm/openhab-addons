@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.burgenlandenergie.internal.handler.SalesApiHandler;
+import org.openhab.binding.burgenlandenergie.internal.handler.TariffThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.burgenlandenergie", service = ThingHandlerFactory.class)
 public class BurgenlandEnergieHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_SALES_API);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_API);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,8 +47,8 @@ public class BurgenlandEnergieHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_SALES_API.equals(thingTypeUID)) {
-            return new SalesApiHandler(thing);
+        if (THING_API.equals(thingTypeUID)) {
+            return new TariffThingHandler(thing);
         }
 
         return null;

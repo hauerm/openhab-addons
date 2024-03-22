@@ -29,10 +29,11 @@ public class BurgenlandEnergieBindingConstants {
     // List of all Thing Type UIDs
 
     // The sales api thing (may add grid-api thing in the future)
-    public static final ThingTypeUID THING_SALES_API = new ThingTypeUID(BINDING_ID, "sales-api");
+    public static final ThingTypeUID THING_API = new ThingTypeUID(BINDING_ID, "tariff-api");
 
     // List of all Channel ids
-    public static final String CURRENT_TARIFF_NAME = "current-tariff-name";
-    public static final String CURRENT_TARIFF_PRICE_KWH = "current-tariff-price-kwh";
-    public static final String CURRENT_TARIFF_PRICE_BASE = "current-tariff-price-base";
+    public static final String TARIFF_DELIVERY_ADDRESS = "delivery-address";
+    public static final String TARIFF_NAME = "name";
+    public static final String TARIFF_PRICE_KWH = "price-kwh";
+    public static final String TARIFF_PRICE_BASE = "price-base";
 }

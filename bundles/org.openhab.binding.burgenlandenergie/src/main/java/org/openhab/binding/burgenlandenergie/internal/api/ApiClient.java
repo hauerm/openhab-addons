@@ -20,7 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountRequest;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountResponse;
-import org.openhab.binding.burgenlandenergie.internal.config.SalesApiConfiguration;
+import org.openhab.binding.burgenlandenergie.internal.config.TariffThingConfiguration;
+import org.openhab.binding.burgenlandenergie.internal.utils.EnvSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,19 +33,21 @@ import com.google.gson.Gson;
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public class SalesApi {
-    private final Logger logger = LoggerFactory.getLogger(SalesApi.class);
-    private static final String PROTOCOLL = "https://";
-    private static final String SALES_API_HOST = "1kchpzz7aa.execute-api.eu-central-1.amazonaws.com";
-    private static final String SALES_API_PATH = "/prod/api/sap/action";
-    private static final String SALES_API_CONTRACT_ACCOUNTS = "/contract-accounts";
+public class ApiClient {
+    private static final String env = "dev";
+    private final Logger logger = LoggerFactory.getLogger(ApiClient.class);
+    private static final String PROTOCOL = "https://";
+    private static final String HOST_ID = EnvSwitch.isProd ? "1kchpzz7aa" : "awnl7rwekl";
+    private static final String API_HOST = HOST_ID + ".execute-api.eu-central-1.amazonaws.com";
+    private static final String API_PATH = (EnvSwitch.isProd ? "/prod" : "/dev") + "/api/sap/action";
+    private static final String API_CONTRACT_ACCOUNTS = "/contract-accounts";
 
-    SalesApiConfiguration config;
-    SalesApiAuthenticator authenticator;
+    TariffThingConfiguration config;
+    ApiAuthenticator authenticator;
 
-    public SalesApi(SalesApiConfiguration config) {
+    public ApiClient(TariffThingConfiguration config) {
         this.config = config;
-        this.authenticator = new SalesApiAuthenticator(config.username, config.password);
+        this.authenticator = new ApiAuthenticator(config.username, config.password);
     }
 
     public CompletableFuture<ContractAccountResponse> getContractAccounts() {
@@ -60,7 +63,7 @@ public class SalesApi {
         ContractAccountRequest body = new ContractAccountRequest("X", "", "", "", readGas, "", "", "");
         Gson gson = new Gson();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(PROTOCOLL + SALES_API_HOST + SALES_API_PATH + SALES_API_CONTRACT_ACCOUNTS))
+                .uri(URI.create(PROTOCOL + API_HOST + API_PATH + API_CONTRACT_ACCOUNTS))
                 .header("Content-Type", "application/json").header("Authorization", idToken)
                 .header("Customer-Nr", config.customerNr).POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
                 .build();
@@ -86,11 +89,11 @@ public class SalesApi {
                 }
 
             } else if (response.statusCode() == 401) {
-                logger.error(SALES_API_CONTRACT_ACCOUNTS + ": unauthorized access");
-                throw new RuntimeException(SALES_API_CONTRACT_ACCOUNTS + ": unauthorized access");
+                logger.error(API_CONTRACT_ACCOUNTS + ": unauthorized access");
+                throw new RuntimeException(API_CONTRACT_ACCOUNTS + ": unauthorized access");
             } else {
-                logger.error("{}: unknown server error", SALES_API_CONTRACT_ACCOUNTS);
-                throw new RuntimeException(SALES_API_CONTRACT_ACCOUNTS + ": unknown server error");
+                logger.error("{}: unknown server error", API_CONTRACT_ACCOUNTS);
+                throw new RuntimeException(API_CONTRACT_ACCOUNTS + ": unknown server error");
             }
         });
     }

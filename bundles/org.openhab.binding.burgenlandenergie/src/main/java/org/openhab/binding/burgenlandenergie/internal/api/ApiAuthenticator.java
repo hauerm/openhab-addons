@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.Login;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.OAuthToken;
+import org.openhab.binding.burgenlandenergie.internal.utils.EnvSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,19 +35,20 @@ import com.google.gson.JsonParser;
  * 
  * @author Michael Hauer - Initial contribution
  */
-public class SalesApiAuthenticator {
+public class ApiAuthenticator {
 
-    private final Logger logger = LoggerFactory.getLogger(SalesApiAuthenticator.class);
-    private final static String AUTH_API_PROTOCOLL = "https://";
-    private static final String AUTH_API_HOST = "1kchpzz7aa.execute-api.eu-central-1.amazonaws.com";
-    private static final String AUTH_API_PATH = "/prod/papi/auth";
+    private final Logger logger = LoggerFactory.getLogger(ApiAuthenticator.class);
+    private final static String AUTH_API_PROTOCOL = "https://";
+    private static final String HOST_ID = EnvSwitch.isProd ? "1kchpzz7aa" : "awnl7rwekl";
+    private static final String AUTH_API_HOST = HOST_ID + ".execute-api.eu-central-1.amazonaws.com";
+    private static final String AUTH_API_PATH = (EnvSwitch.isProd ? "/prod" : "/dev") + "/papi/auth";
     private static final String AUTH_API_LOGIN = "/signin";
     private static final String AUTH_API_REFRESH = "/signin/refresh";
 
     private final Login login;
     private OAuthToken oAuthToken = null;
 
-    public SalesApiAuthenticator(String username, String password) {
+    public ApiAuthenticator(String username, String password) {
         this.login = new Login(username, password);
     }
 
@@ -54,7 +56,7 @@ public class SalesApiAuthenticator {
         if (oAuthToken == null || oAuthToken.isExpired()) {
             Gson gson = new Gson();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(AUTH_API_PROTOCOLL + AUTH_API_HOST + AUTH_API_PATH + AUTH_API_LOGIN))
+                    .uri(URI.create(AUTH_API_PROTOCOL + AUTH_API_HOST + AUTH_API_PATH + AUTH_API_LOGIN))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(login))).build();
 
@@ -86,7 +88,7 @@ public class SalesApiAuthenticator {
             String refreshTokenJson = "{\"refreshToken\":\"" + oAuthToken.getRefreshToken() + "\"}";
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(AUTH_API_PROTOCOLL + AUTH_API_HOST + AUTH_API_PATH + AUTH_API_REFRESH))
+                    .uri(URI.create(AUTH_API_PROTOCOL + AUTH_API_HOST + AUTH_API_PATH + AUTH_API_REFRESH))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(refreshTokenJson)).build();
 

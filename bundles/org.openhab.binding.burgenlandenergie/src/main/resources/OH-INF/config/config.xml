@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:sales-api:config">
+	<config-description uri="thing-type:tariff-api:config">
 		<parameter name="username" type="text" required="true">
 			<label>Username</label>
 			<description>meine.burgenlandenergie.at username</description>
@@ -23,12 +23,12 @@
 			<description>The desired contract account number for</description>
 		</parameter>
 		<parameter name="division" type="text" required="false">
-			<default>E</default>
+			<default>ELECTRICITY</default>
 			<label>Division</label>
-			<description>If it is a combined contract account select the division</description>
+			<description>Currently supported divisions. Select one per thing</description>
 			<options>
-				<option value="E">Electricity</option>
-				<option value="G">Natural Gas</option>
+				<option value="ELECTRICITY">Electricity</option>
+				<option value="NATURALGAS">Natural Gas</option>
 			</options>
 		</parameter>
 	</config-description>

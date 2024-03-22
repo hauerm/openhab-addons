@@ -15,12 +15,12 @@ package org.openhab.binding.burgenlandenergie.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SalesApiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link TariffThingConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public class SalesApiConfiguration {
+public class TariffThingConfiguration {
 
     // The meine.burgenlandenergie.at username
     public String username = "";
