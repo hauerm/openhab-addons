@@ -10,27 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api.enums;
+package org.openhab.binding.burgenlandenergie.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Currently supported divisions.
+ * The {@link ElectricityTariffThingConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public enum Division {
-    ELECTRICITY("10"),
-    NATURALGAS("60");
+public class ElectricityTariffThingConfig {
 
-    private final String id;
-
-    Division(String division) {
-        this.id = division;
-    }
-
-    public String getId() {
-        return id;
-    }
+    // The sales contract account number
+    public String contractAccountNr = "";
+    public boolean electricalHeating = false;
 }

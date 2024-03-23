@@ -10,27 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api.enums;
+package org.openhab.binding.burgenlandenergie.internal.utils;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.google.gson.Gson;
 
 /**
- * Currently supported divisions.
+ * Helper to switch between development and production environment.
  *
  * @author Michael Hauer - Initial contribution
  */
-@NonNullByDefault
-public enum Division {
-    ELECTRICITY("10"),
-    NATURALGAS("60");
+public class GsonSingleton {
+    public static Gson INSTANCE = new Gson();
 
-    private final String id;
-
-    Division(String division) {
-        this.id = division;
-    }
-
-    public String getId() {
-        return id;
+    public static void destroy() {
+        INSTANCE = null;
     }
 }

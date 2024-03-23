@@ -15,17 +15,18 @@ package org.openhab.binding.burgenlandenergie.internal.api;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccount;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountRequest;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountResponse;
-import org.openhab.binding.burgenlandenergie.internal.config.TariffThingConfiguration;
+import org.openhab.binding.burgenlandenergie.internal.config.BEBridgeConfiguration;
 import org.openhab.binding.burgenlandenergie.internal.utils.EnvSwitch;
+import org.openhab.binding.burgenlandenergie.internal.utils.GsonSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * HTTP API client which handles oauth2 authentication including token refresh
@@ -42,44 +43,44 @@ public class ApiClient {
     private static final String API_PATH = (EnvSwitch.isProd ? "/prod" : "/dev") + "/api/sap/action";
     private static final String API_CONTRACT_ACCOUNTS = "/contract-accounts";
 
-    TariffThingConfiguration config;
+    BEBridgeConfiguration config;
     ApiAuthenticator authenticator;
 
-    public ApiClient(TariffThingConfiguration config) {
+    public ApiClient(BEBridgeConfiguration config) {
         this.config = config;
         this.authenticator = new ApiAuthenticator(config.username, config.password);
     }
 
-    public CompletableFuture<ContractAccountResponse> getContractAccounts() {
+    public CompletableFuture<ContractAccount[]> getContractAccounts() {
         return authenticator.getIdToken().thenCompose(this::postContractAccountsRequest);
     }
 
-    private CompletableFuture<ContractAccountResponse> postContractAccountsRequest(String idToken) {
-        // By the time of implementing this we focus on electricity
-        // We plan to include other divisions like gas, emobility, service in the future
-
-        String readGas = config.division.equals("G") ? "X" : "";
-
-        ContractAccountRequest body = new ContractAccountRequest("X", "", "", "", readGas, "", "", "");
-        Gson gson = new Gson();
+    private CompletableFuture<ContractAccount[]> postContractAccountsRequest(String idToken) {
+        ContractAccountRequest body = new ContractAccountRequest("X", "", "", "X", "X", "", "", "");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(PROTOCOL + API_HOST + API_PATH + API_CONTRACT_ACCOUNTS))
                 .header("Content-Type", "application/json").header("Authorization", idToken)
-                .header("Customer-Nr", config.customerNr).POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
-                .build();
+                .header("Customer-Nr", config.customerNr)
+                .POST(HttpRequest.BodyPublishers.ofString(GsonSingleton.INSTANCE.toJson(body))).build();
 
         CompletableFuture<HttpResponse<String>> futureCAs = HttpClientSingleton.INSTANCE.sendAsync(request,
                 HttpResponse.BodyHandlers.ofString());
 
         return futureCAs.thenApply(response -> {
             if (response.statusCode() == 200) {
-
                 try {
-                    ContractAccountResponse caResponse = gson.fromJson(response.body(), ContractAccountResponse.class);
+                    ContractAccountResponse caResponse = GsonSingleton.INSTANCE.fromJson(response.body(),
+                            ContractAccountResponse.class);
 
                     if (caResponse != null) {
+                        if (!Objects.equals(caResponse.getSapMessage().status(), "S")
+                                || caResponse.getContractAccounts().length == 0) {
+                            logger.error("{}", caResponse.getSapMessage().text());
+                            throw new RuntimeException("Fetching contract-accounts unsuccessfull or empty.");
+                        }
+
                         logger.debug("Contract-Accounts successfully fetched");
-                        return caResponse;
+                        return caResponse.getContractAccounts();
                     } else {
                         throw new RuntimeException("Error while parsing Contract-Accounts");
                     }

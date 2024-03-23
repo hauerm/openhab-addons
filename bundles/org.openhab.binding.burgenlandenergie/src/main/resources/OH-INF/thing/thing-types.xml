@@ -4,16 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="tariff-api">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="BurgenlandEnergieBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="electricity-tariff">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
 
-		<label>Burgenland Energie</label>
-		<description>Burgenland Energie Tarifinfos</description>
+		<label>Electricity Tariff</label>
+		<description>Burgenland Energie Electricity Tariff</description>
 
 		<channels>
 			<channel id="delivery-address" typeId="delivery-address"/>
@@ -22,31 +19,45 @@
 			<channel id="name" typeId="name"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:tariff-api:config"/>
+		<config-description-ref uri="thing-type:burgenlandenergie:electricity-tariff"/>
+	</thing-type>
+
+	<thing-type id="naturalgas-tariff">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Natural-Gas Tariff</label>
+		<description>Burgenland Energie Natural-Gas Tariff</description>
+
+		<channels>
+			<channel id="delivery-address" typeId="delivery-address"/>
+			<channel id="price-kwh" typeId="price-kwh"/>
+			<channel id="price-base" typeId="price-base"/>
+			<channel id="name" typeId="name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:burgenlandenergie:naturalgas-tariff"/>
 	</thing-type>
 
 	<channel-type id="delivery-address">
 		<item-type>String</item-type>
 		<label>Delivery Address</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Address where this tariff is in use</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="price-kwh">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Euro/kWh</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Working price in Euro per kWh</description>
 		<state readOnly="true" pattern="%.4f %unit%" step="0.0001"/>
 	</channel-type>
 	<channel-type id="price-base">
 		<item-type>Number:Currency</item-type>
 		<label>Euro/Month</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Base price in Euro per month</description>
 		<state readOnly="true" pattern="%.4f %unit%" step="0.0001"/>
 	</channel-type>
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Tariff Name</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Tariff Name</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

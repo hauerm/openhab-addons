@@ -10,27 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.burgenlandenergie.internal.api.enums;
+package org.openhab.binding.burgenlandenergie.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccount;
 
 /**
- * Currently supported divisions.
+ * The {@link IContractAccountListener} should be implemented by all things interested in {@link ContractAccount}
+ * updates from {@link BEBridgeHandler}.
  *
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public enum Division {
-    ELECTRICITY("10"),
-    NATURALGAS("60");
-
-    private final String id;
-
-    Division(String division) {
-        this.id = division;
-    }
-
-    public String getId() {
-        return id;
-    }
+public interface IContractAccountListener {
+    void onContractAccountsUpdate(ContractAccount[] contractAccounts);
 }

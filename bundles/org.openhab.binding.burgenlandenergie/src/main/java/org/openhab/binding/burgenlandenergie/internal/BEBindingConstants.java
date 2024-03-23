@@ -16,20 +16,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link BurgenlandEnergieBindingConstants} class defines common constants, which are
+ * The {@link BEBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public class BurgenlandEnergieBindingConstants {
+public class BEBindingConstants {
 
     private static final String BINDING_ID = "burgenlandenergie";
 
     // List of all Thing Type UIDs
 
-    // The sales api thing (may add grid-api thing in the future)
-    public static final ThingTypeUID THING_API = new ThingTypeUID(BINDING_ID, "tariff-api");
+    public static final ThingTypeUID THING_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+
+    // The electricity tariff thing
+    public static final ThingTypeUID THING_ELECTRICITY_TARIFF = new ThingTypeUID(BINDING_ID, "electricity-tariff");
+    public static final ThingTypeUID THING_NATURALGAS_TARIFF = new ThingTypeUID(BINDING_ID, "naturalgas-tariff");
 
     // List of all Channel ids
     public static final String TARIFF_DELIVERY_ADDRESS = "delivery-address";
