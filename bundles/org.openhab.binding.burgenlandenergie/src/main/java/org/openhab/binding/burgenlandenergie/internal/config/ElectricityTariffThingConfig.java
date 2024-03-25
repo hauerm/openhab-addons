@@ -24,5 +24,5 @@ public class ElectricityTariffThingConfig {
 
     // The sales contract account number
     public String contractAccountNr = "";
-    public boolean electricalHeating = false;
+    public String tariffClassification = "DEFAULT";
 }

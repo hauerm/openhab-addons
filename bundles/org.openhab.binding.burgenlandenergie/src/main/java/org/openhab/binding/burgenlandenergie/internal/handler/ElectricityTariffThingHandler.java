@@ -69,18 +69,34 @@ public class ElectricityTariffThingHandler extends BaseThingHandler implements I
                 .filter(c -> config.contractAccountNr.equals(c.getContractAccountNr())).findFirst().orElse(null);
 
         if (ca != null) {
-            Arrays.stream(ca.getTariffs()).filter(t -> Division.ELECTRICITY.getId().equals(t.division())
-                    && config.electricalHeating == t.electricityWarmth()).findFirst().ifPresentOrElse(t -> {
-                        updateState(BEBindingConstants.TARIFF_DELIVERY_ADDRESS, new StringType(ca.getDescription()));
-                        updateState(BEBindingConstants.TARIFF_NAME, new StringType(t.tariffName()));
-                        updateState(BEBindingConstants.TARIFF_PRICE_KWH,
-                                new QuantityType<>(t.workPrice() * 1.2, CurrencyUnits.BASE_ENERGY_PRICE));
-                        updateState(BEBindingConstants.TARIFF_PRICE_BASE,
-                                new QuantityType<>(t.basePrice() * 1.2, CurrencyUnits.BASE_CURRENCY));
-                    }, () -> {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/offline.invalid-division");
-                    });
+
+            Arrays.stream(ca.getTariffs()).filter(t -> {
+                boolean divisionOK = Division.ELECTRICITY.getId().equals(t.division());
+
+                if (divisionOK) {
+                    // && config.electricalHeating == t.electricityWarmth();
+                    if (config.tariffClassification.equals("HEATING") && t.electricityWarmth()) {
+                        return true;
+                    } else if (config.tariffClassification.equals("FEEDIN") && ca.isElectricityFeeder()) {
+                        return true;
+                    } else if (config.tariffClassification.equals("DEFAULT") && !ca.isElectricityFeeder()
+                            && !t.electricityWarmth()) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }).findFirst().ifPresentOrElse(t -> {
+                updateState(BEBindingConstants.TARIFF_DELIVERY_ADDRESS, new StringType(ca.getDescription()));
+                updateState(BEBindingConstants.TARIFF_NAME, new StringType(t.tariffName()));
+                updateState(BEBindingConstants.TARIFF_PRICE_KWH,
+                        new QuantityType<>(t.workPrice() * 1.2, CurrencyUnits.BASE_ENERGY_PRICE));
+                updateState(BEBindingConstants.TARIFF_PRICE_BASE,
+                        new QuantityType<>(t.basePrice() * 1.2, CurrencyUnits.BASE_CURRENCY));
+            }, () -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.invalid-division");
+            });
 
             updateStatus(ThingStatus.ONLINE);
         } else {

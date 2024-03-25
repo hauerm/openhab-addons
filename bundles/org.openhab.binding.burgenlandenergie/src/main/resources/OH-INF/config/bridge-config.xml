@@ -15,5 +15,9 @@
 		<parameter name="customerNr" type="text" required="true">
 			<label>Customer-Nr</label>
 		</parameter>
+		<parameter name="refreshIntervalMins" type="integer" required="true" min="30" max="120">
+			<label>Refresh Intervall in miniutes</label>
+			<description>The data refresh intervall used for all things of this bridge</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

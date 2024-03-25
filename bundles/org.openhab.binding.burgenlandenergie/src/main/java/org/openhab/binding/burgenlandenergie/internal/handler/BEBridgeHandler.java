@@ -66,8 +66,8 @@ public class BEBridgeHandler extends BaseBridgeHandler {
         // check if the configuration is valid
         if (!config.username.isBlank() && !config.password.isBlank() && !config.customerNr.isBlank()) {
             apiClient = new ApiClient(config);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::fetchContractAccounts, 0L,
-                    EnvSwitch.refreshIntervallMinutes, MINUTES);
+            int interval = EnvSwitch.isProd ? config.refreshIntervalMins : 1;
+            pollingJob = scheduler.scheduleWithFixedDelay(this::fetchContractAccounts, 0L, interval, MINUTES);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.invalid-configuration");

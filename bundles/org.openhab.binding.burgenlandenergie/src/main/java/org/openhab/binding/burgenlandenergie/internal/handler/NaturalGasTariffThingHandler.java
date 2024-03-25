@@ -69,8 +69,8 @@ public class NaturalGasTariffThingHandler extends BaseThingHandler implements IB
                 .filter(c -> config.contractAccountNr.equals(c.getContractAccountNr())).findFirst().orElse(null);
 
         if (ca != null) {
-            Arrays.stream(ca.getTariffs()).filter(t -> Division.NATURALGAS.getId().equals(t.division())
-                    && config.electricalHeating == t.electricityWarmth()).findFirst().ifPresentOrElse(t -> {
+            Arrays.stream(ca.getTariffs()).filter(t -> Division.NATURALGAS.getId().equals(t.division())).findFirst()
+                    .ifPresentOrElse(t -> {
                         updateState(BEBindingConstants.TARIFF_DELIVERY_ADDRESS, new StringType(ca.getDescription()));
                         updateState(BEBindingConstants.TARIFF_NAME, new StringType(t.tariffName()));
                         updateState(BEBindingConstants.TARIFF_PRICE_KWH,

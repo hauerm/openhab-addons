@@ -29,4 +29,6 @@ public class BEBridgeConfiguration {
     public String password = "";
 
     public String customerNr = "";
+
+    public int refreshIntervalMins = 30;
 }

@@ -8,9 +8,14 @@
 		<parameter name="contractAccountNr" type="text" required="true">
 			<label>Contract-Account Number</label>
 		</parameter>
-		<parameter name="electricalHeating" type="boolean" required="true">
-			<label>Heating</label>
-			<default>false</default>
+		<parameter name="tariffClassification" type="text" required="true">
+			<label>Tariff classification</label>
+			<default>DEFAULT</default>
+			<options>
+				<option value="DEFAULT">Default</option>
+				<option value="FEEDIN">Feed-In</option>
+				<option value="HEATING">Heating</option>
+			</options>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -118,8 +118,8 @@ public class ApiAuthenticator {
                 public void run() {
                     refreshAccessToken();
                 }
-            }, TimeUnit.MINUTES.toMillis(EnvSwitch.refreshIntervallMinutes),
-                    TimeUnit.MINUTES.toMillis(EnvSwitch.refreshIntervallMinutes));
+            }, TimeUnit.MINUTES.toMillis(EnvSwitch.isProd ? 30 : 1),
+                    TimeUnit.MINUTES.toMillis(EnvSwitch.isProd ? 30 : 1));
             logger.debug("Started refresh token timer");
         }
     }
