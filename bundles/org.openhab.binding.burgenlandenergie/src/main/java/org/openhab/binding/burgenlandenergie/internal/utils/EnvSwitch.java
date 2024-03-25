@@ -22,4 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EnvSwitch {
     public static final boolean isProd = false;
+
+    public static final int refreshIntervallMinutes = 1;
 }

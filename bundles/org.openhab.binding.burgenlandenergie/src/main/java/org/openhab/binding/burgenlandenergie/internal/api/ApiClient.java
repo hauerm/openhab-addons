@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccount;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountRequest;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccountResponse;
@@ -35,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ApiClient {
-    private static final String env = "dev";
     private final Logger logger = LoggerFactory.getLogger(ApiClient.class);
     private static final String PROTOCOL = "https://";
     private static final String HOST_ID = EnvSwitch.isProd ? "1kchpzz7aa" : "awnl7rwekl";
@@ -43,7 +43,9 @@ public class ApiClient {
     private static final String API_PATH = (EnvSwitch.isProd ? "/prod" : "/dev") + "/api/sap/action";
     private static final String API_CONTRACT_ACCOUNTS = "/contract-accounts";
 
+    @Nullable
     BEBridgeConfiguration config;
+    @Nullable
     ApiAuthenticator authenticator;
 
     public ApiClient(BEBridgeConfiguration config) {
@@ -51,8 +53,19 @@ public class ApiClient {
         this.authenticator = new ApiAuthenticator(config.username, config.password);
     }
 
+    /**
+     * Fetches all contract accounts from the API.
+     *
+     * @return CompletableFuture<ContractAccount[]> containing the contract accounts or an empty array if no contract
+     *         accounts are available or an error occurred.
+     */
     public CompletableFuture<ContractAccount[]> getContractAccounts() {
-        return authenticator.getIdToken().thenCompose(this::postContractAccountsRequest);
+        if (authenticator != null) {
+            return authenticator.getIdToken().thenCompose(this::postContractAccountsRequest);
+        } else {
+            logger.debug("Could not fetch Contract-Accounts: authenticator is not initialized");
+            return CompletableFuture.completedFuture(new ContractAccount[0]);
+        }
     }
 
     private CompletableFuture<ContractAccount[]> postContractAccountsRequest(String idToken) {
@@ -76,26 +89,31 @@ public class ApiClient {
                         if (!Objects.equals(caResponse.getSapMessage().status(), "S")
                                 || caResponse.getContractAccounts().length == 0) {
                             logger.error("{}", caResponse.getSapMessage().text());
-                            throw new RuntimeException("Fetching contract-accounts unsuccessfull or empty.");
                         }
 
                         logger.debug("Contract-Accounts successfully fetched");
                         return caResponse.getContractAccounts();
                     } else {
-                        throw new RuntimeException("Error while parsing Contract-Accounts");
+                        logger.debug("Error while parsing Contract-Accounts");
                     }
                 } catch (Exception e) {
                     logger.error("Error while parsing Contract-Accounts: {}", e.getMessage());
-                    throw new RuntimeException("Error while parsing Contract-Accounts: {}" + e.getMessage());
                 }
 
             } else if (response.statusCode() == 401) {
                 logger.error(API_CONTRACT_ACCOUNTS + ": unauthorized access");
-                throw new RuntimeException(API_CONTRACT_ACCOUNTS + ": unauthorized access");
             } else {
                 logger.error("{}: unknown server error", API_CONTRACT_ACCOUNTS);
-                throw new RuntimeException(API_CONTRACT_ACCOUNTS + ": unknown server error");
             }
+
+            return new ContractAccount[0];
         });
+    }
+
+    public void dispose() {
+        if (authenticator != null) {
+            authenticator.dispose();
+            authenticator = null;
+        }
     }
 }

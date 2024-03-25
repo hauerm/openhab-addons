@@ -36,7 +36,7 @@ import org.openhab.core.types.Command;
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public class ElectricityTariffThingHandler extends BaseThingHandler implements IContractAccountListener {
+public class ElectricityTariffThingHandler extends BaseThingHandler implements IBEBridgeListener {
     private final ElectricityTariffThingConfig config = getConfigAs(ElectricityTariffThingConfig.class);
 
     public ElectricityTariffThingHandler(Thing thing) {

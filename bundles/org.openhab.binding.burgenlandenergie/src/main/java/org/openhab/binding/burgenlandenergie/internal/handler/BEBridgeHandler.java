@@ -14,14 +14,15 @@ package org.openhab.binding.burgenlandenergie.internal.handler;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.burgenlandenergie.internal.api.ApiClient;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccount;
 import org.openhab.binding.burgenlandenergie.internal.config.BEBridgeConfiguration;
+import org.openhab.binding.burgenlandenergie.internal.utils.EnvSwitch;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -41,15 +42,16 @@ public class BEBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BEBridgeHandler.class);
 
-    private final BEBridgeConfiguration config;
-    private @Nullable ApiClient apiClient;
-
     private ContractAccount[] contractAccounts = new ContractAccount[0];
+
+    @Nullable
+    private ScheduledFuture<?> pollingJob = null;
+
+    @Nullable
+    private ApiClient apiClient;
 
     public BEBridgeHandler(Bridge bridge) {
         super(bridge);
-        this.config = getConfigAs(BEBridgeConfiguration.class);
-        this.apiClient = new ApiClient(this.config);
     }
 
     @Override
@@ -59,24 +61,23 @@ public class BEBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        boolean configValid = true;
+        BEBridgeConfiguration config = getConfigAs(BEBridgeConfiguration.class);
 
         // check if the configuration is valid
-        if (config.username.isBlank() || config.password.isBlank()) {
+        if (!config.username.isBlank() && !config.password.isBlank() && !config.customerNr.isBlank()) {
+            apiClient = new ApiClient(config);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::fetchContractAccounts, 0L,
+                    EnvSwitch.refreshIntervallMinutes, MINUTES);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.invalid-configuration");
-            configValid = false;
-        }
-
-        if (configValid && apiClient != null) {
-            scheduler.scheduleWithFixedDelay(this::fetchContractAccounts, 0L, 30, MINUTES);
         }
     }
 
     private void fetchContractAccounts() {
         try {
             // apiClient cant be null here, but pmd does not recognize it
-            if (apiClient != null) {
+            if (apiClient != null && getThing().isEnabled()) {
                 contractAccounts = apiClient.getContractAccounts().get();
 
                 if (contractAccounts.length > 0) {
@@ -85,19 +86,27 @@ public class BEBridgeHandler extends BaseBridgeHandler {
                 }
 
                 getThing().getThings().forEach(thing -> {
-                    if (thing.getHandler() instanceof IContractAccountListener) {
-                        ((IContractAccountListener) thing.getHandler()).onContractAccountsUpdate(contractAccounts);
+                    if (thing.getHandler() instanceof IBEBridgeListener bridgeListener) {
+                        bridgeListener.onContractAccountsUpdate(contractAccounts);
                     }
                 });
             }
         } catch (InterruptedException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE);
-            throw new RuntimeException(e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unknown");
         }
     }
 
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
+    public void dispose() {
+        super.dispose();
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+        if (apiClient != null) {
+            apiClient.dispose();
+            apiClient = null;
+        }
+        logger.debug("BEBridgeHandler disposed");
     }
 }

@@ -47,6 +47,7 @@ public class ApiAuthenticator {
 
     private final Login login;
     private OAuthToken oAuthToken = null;
+    Timer refreshTokenTimer;
 
     public ApiAuthenticator(String username, String password) {
         this.login = new Login(username, password);
@@ -110,12 +111,23 @@ public class ApiAuthenticator {
     }
 
     private void refreshAccessTokenHalfHourly() {
-        Timer hourlyTask = new Timer();
-        hourlyTask.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                refreshAccessToken();
-            }
-        }, TimeUnit.MINUTES.toMillis(30), TimeUnit.MINUTES.toMillis(30));
+        if (refreshTokenTimer == null) {
+            refreshTokenTimer = new Timer();
+            refreshTokenTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    refreshAccessToken();
+                }
+            }, TimeUnit.MINUTES.toMillis(EnvSwitch.refreshIntervallMinutes),
+                    TimeUnit.MINUTES.toMillis(EnvSwitch.refreshIntervallMinutes));
+            logger.debug("Started refresh token timer");
+        }
+    }
+
+    public void dispose() {
+        refreshTokenTimer.cancel();
+        int canceledTimerTasks = refreshTokenTimer.purge();
+        refreshTokenTimer = null;
+        logger.debug("Canceled {} refresh token timer tasks.", canceledTimerTasks);
     }
 }

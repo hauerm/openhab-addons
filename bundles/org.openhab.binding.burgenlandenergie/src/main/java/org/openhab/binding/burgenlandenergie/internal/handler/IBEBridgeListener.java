@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.burgenlandenergie.internal.api.pojo.ContractAccount;
 
 /**
- * The {@link IContractAccountListener} should be implemented by all things interested in {@link ContractAccount}
+ * The {@link IBEBridgeListener} should be implemented by all things interested in {@link ContractAccount}
  * updates from {@link BEBridgeHandler}.
  *
  * @author Michael Hauer - Initial contribution
  */
 @NonNullByDefault
-public interface IContractAccountListener {
+public interface IBEBridgeListener {
     void onContractAccountsUpdate(ContractAccount[] contractAccounts);
 }
