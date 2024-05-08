@@ -87,12 +87,13 @@ public class ElectricityTariffThingHandler extends BaseThingHandler implements I
 
                 return false;
             }).findFirst().ifPresentOrElse(t -> {
+                double taxFactor = ca.isElectricityFeeder() ? 1 : 1.2;
                 updateState(BEBindingConstants.TARIFF_DELIVERY_ADDRESS, new StringType(ca.getDescription()));
                 updateState(BEBindingConstants.TARIFF_NAME, new StringType(t.tariffName()));
                 updateState(BEBindingConstants.TARIFF_PRICE_KWH,
-                        new QuantityType<>(t.workPrice() * 1.2, CurrencyUnits.BASE_ENERGY_PRICE));
+                        new QuantityType<>(t.workPrice() * taxFactor, CurrencyUnits.BASE_ENERGY_PRICE));
                 updateState(BEBindingConstants.TARIFF_PRICE_BASE,
-                        new QuantityType<>(t.basePrice() * 1.2, CurrencyUnits.BASE_CURRENCY));
+                        new QuantityType<>(t.basePrice() * taxFactor, CurrencyUnits.BASE_CURRENCY));
             }, () -> {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.invalid-division");
